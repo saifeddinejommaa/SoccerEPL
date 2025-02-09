@@ -1,11 +1,11 @@
-import storage from "./StorageConfig";
+import storage from './StorageConfig';
 
 export const saveToCache = async (key: string, value: any) => {
   try {
     await storage.save({
       key,
       data: value,
-      expires: null, 
+      expires: null,
     });
     console.log(`Data saved with key: ${key}`);
   } catch (error) {
@@ -15,7 +15,7 @@ export const saveToCache = async (key: string, value: any) => {
 
 export const getFromCache = async (key: string) => {
   try {
-    const value = await storage.load({ key });
+    const value = await storage.load({key});
     console.log(`Data retrieved for key: ${key}`, value);
     return value;
   } catch (error) {
@@ -26,7 +26,7 @@ export const getFromCache = async (key: string) => {
 
 export const removeFromCache = async (key: string) => {
   try {
-    await storage.remove({ key });
+    await storage.remove({key});
     console.log(`Data removed with key: ${key}`);
   } catch (error) {
     console.error('Error removing data from cache:', error);
