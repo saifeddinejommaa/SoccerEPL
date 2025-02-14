@@ -23,7 +23,7 @@ const SplashScreen: React.FC = () => {
     };
   }, []);
 
-  const exampleImage = require('../assets/soccer.jpg');
+  const exampleImage = require('../../assets/soccer.jpg');
   return (
     <View>
       <Image source={exampleImage}></Image>

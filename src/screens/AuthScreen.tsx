@@ -1,10 +1,12 @@
 import {View, StyleSheet, TextInput} from 'react-native';
-import {EplButton} from '../widgets/EplButton';
+import {EplButton} from '../../widgets/EplButton';
 import {useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
-import {saveUser} from '../manager/cacheManager';
+import {useEffect, useState} from 'react';
 import {Text} from 'react-native-gesture-handler';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { useDispatch, useSelector } from 'react-redux';
+import { auth } from '../store/slices/UserSlice';
+import { AppDispatch, RootState } from '../store';
 
 type RootStackParamList = {
   Splash: undefined;
@@ -12,11 +14,27 @@ type RootStackParamList = {
 };
 
 const AuthScreen: React.FC = () => {
+
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const [messageError, setMessageError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const user = useSelector((state:RootState)=>state.user)
+
+  useEffect(()=>{
+    if(user.user != undefined){
+      navigation.replace('AllTeams');
+    }
+  },[user])
+
+  const authHandler = async () => {
+    try {
+      await dispatch(auth()); 
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -29,34 +47,21 @@ const AuthScreen: React.FC = () => {
           style={styles.textInput}
           placeholder="password"
           secureTextEntry={true}></TextInput>
-        <Text style={styles.messageError}>{messageError}</Text>
+        <Text style={styles.messageError}>{user.errorMessage}</Text>
       </View>
       <View>
         <EplButton
-          isLoading={loading}
+          isLoading={user.loading}
           width={200}
-          disabled={loading}
+          disabled={user.loading}
           title="Login"
-          onPress={() => {
-            setLoading(true);
-            const timeout = setTimeout(async () => {
-              const result: boolean = await saveUser({
-                id: 1,
-                email: 'sejomma@gmail.com',
-                token: '28a33dc5-4930-4938-918d-37a09e4f7a64',
-                username: 'JOMMAA',
-              });
-
-              if (result) {
-                navigation.replace('Main');
-              }
-              setLoading(false);
-            }, 2000);
-          }}></EplButton>
+          onPress={authHandler}></EplButton>
       </View>
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
